@@ -14,11 +14,11 @@ def sell_all(api):
 
 def momentum_trade(api):
 
-	bars = api.get_barset('AAPL', '1Min', 5)
+	bars = api.get_barset('AAPL', '1Min', 3)
 	start =  bars["AAPL"][0].o
 	last_five_min_open = []
-	convolution_list = [.1,.1,.2,.2,.4]
-	for i in range(5):
+	convolution_list = [.25,.25,.5]
+	for i in range(3):
 		last_five_min_open.append((bars["AAPL"][i].o)*convolution_list[i])
 	avg = sum(last_five_min_open)
 	if(avg > start):
@@ -26,7 +26,7 @@ def momentum_trade(api):
 
 		api.submit_order(
                 symbol='AAPL',
-                qty=1,
+                qty=50,
                 side='buy',
                 type='market',
                 time_in_force='day',
@@ -39,21 +39,17 @@ def momentum_trade(api):
 
 
 
-
-fh = open("../private.txt","r")
-
+#Feeding in Username, API Passcode
+fh = open("../private.txt", "r")
 temp = fh.read().split('\n')
-#print(temp)
-
-
 api = tradeapi.REST(
     key_id= temp[0],
     secret_key= temp[1],
     base_url='https://paper-api.alpaca.markets'
 )
 
-# print(api.get_clock())
-# print(api.get_barset('AAPL', 'day', limit=1))
+print(api.get_clock())
+#print(api.get_barset('AAPL', 'day', limit=1))
 
 # api.submit_order(
 #                 symbol='AAPL',
@@ -74,14 +70,16 @@ api = tradeapi.REST(
 # print(pos[0])
 # print(now.strftime('%Y-%m-%d'))
 
-# bars = api.get_barset('AAPL', '1Min', 5)
+a = ['AAPL', 'TSLA']
+bars = api.get_barset(a, '1Min', 5)
 
-# print(bars)
+print(bars)
 # print(" ")
 # print(" ")
 # print(bars.df)
 # print(bars["AAPL"][1].c)
-
+#print(bars)
+print(api)
 
 while True:
 	clock = api.get_clock()
