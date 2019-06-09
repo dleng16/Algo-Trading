@@ -14,13 +14,23 @@ api = tradeapi.REST(
     base_url='https://paper-api.alpaca.markets'
 )
 
-print(api.get_clock())
-print()
-print(time.clock())
-hi = pd.Timestamp(year=2017, month=1, day=1, hour=12).time()
-print(hi)
-time.localtime()
-#print(api.get_barset('AAPL', 'day', limit=1))
+# print(api.get_clock())
+# print()
+# print(time.clock())
+# hi = pd.Timestamp(year=2017, month=1, day=1, hour=12).time()
+# print(hi)
+# time.localtime()
+
+# avg = 0
+# volume_list = []
+# bars = api.get_barset('AAPL', '5Min', limit=1000)
+# for i in bars["AAPL"]:
+# 	volume_list.append(i.v)
+# 	avg = avg + i.v
+# avg = avg /1000/5
+# print(avg)
+# print(np.percentile(volume_list, 95)/5)
+# print(api.get_barset('AAPL', '1Min', limit=5))
 
 # api.submit_order(
 #                 symbol='AAPL',
@@ -32,7 +42,7 @@ time.localtime()
 
 # clock = api.get_clock()
 
-print(api.get_asset("AAPL"))
+#print(api.get_asset("AAPL"))
 
 # now = clock.timestamp
 
@@ -54,16 +64,16 @@ print(api.get_asset("AAPL"))
 #print(bars)
 #print(api)
 
+base = ta.trading_algo(api)
+
 while True:
 	clock = api.get_clock()
 	if clock.is_open:
 		print("")
-		ta.momentum_trade(api)
+		base.momentum_with_volume('AAPL')
 		#momentum_state_defined(api)
 	else:
 		#momentum_state_defined(api)
 		print("Market Closed " + str(clock.timestamp))
-
-	ta.print_info()
 	time.sleep(20)
 
