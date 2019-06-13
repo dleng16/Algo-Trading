@@ -5,13 +5,15 @@ import pandas as pd
 
 class trading_algo:
 
-	def __init__(self, api, safety = True):
+	def __init__(self, api, email = False, safety = True):
 		self.api = api #api class from alpaca markets
 		self.safety = safety
+		self.email = False
+		self.safety = True
+		self.algo_name = "None"
 
 	def print_info(self):
 		print("Now in tradealgo package")
-		
 
 	def sell_all(self):
 		for i in self.api.list_positions():
@@ -46,7 +48,7 @@ class trading_algo:
 	            )
 		else:
 			print("Sell All " + str(start) + " " + str(avg))
-			sell_all()
+			self.sell_all()
 
 	def momentum_state_defined(self):
 		check_time = time.localtime()
@@ -55,16 +57,17 @@ class trading_algo:
 		 	momentum_up_state = self.api.get_barset('AAPL', '1min', 1)
 
 
-	def momentum_with_volume(self, ticker):
+	def momentum_with_volume(self, ticker, email = False):
+		self.algo_name = 'momentum_with_volume'
 
 		#get avg volume of last 1000 minutes
 		avg_vol_hist = 0
 		volume_list = []
-		bars = self.api.get_barset(ticker, '1Min', limit=1000)
+		bars = self.api.get_barset(ticker, '1Min', limit=300)
 		for i in bars[ticker]:
 			volume_list.append(i.v)
 			avg_ = avg_vol_hist + i.v
-		avg_vol_hist = avg_vol_hist / 1000
+		avg_vol_hist = avg_vol_hist / 100
 		vol_percentile_threshold = np.percentile(volume_list, 90) # 90 percentile of volume
 
 
@@ -85,7 +88,7 @@ class trading_algo:
 			last_three_min_open.append((bars[ticker][i].c)*convolution_list[i])
 		avg_price = sum(last_three_min_open)
 
-		#stock price last three minutes
+		#stock price last five minutes
 		bars = self.api.get_barset(ticker, '1Min', limit=5)
 		start_price_five =  bars[ticker][0].o
 		last_five_min_open = []
@@ -98,6 +101,7 @@ class trading_algo:
 		current_volume = bars[ticker][4].v
 
 		#submit buy
+		order_flag = "hold"
 		if(((current_volume > vol_percentile_threshold) and (avg_price > start_price)) or ((current_volume > avg_vol) and (avg_price > start_price))): 
 			print("Buy " + str(start_price) + " " + str(bars[ticker][4].c))
 			self.api.submit_order(
@@ -107,22 +111,36 @@ class trading_algo:
 	                type='market',
 	                time_in_force='day',
 	            )
+			order_flag = "buy"
+
 	  	#submit sell
-		if(((current_volume > vol_percentile_threshold) and (avg_price_five < start_price_five)) or ((current_volume > avg_vol) and (avg_price_five < start_price_five))):
+		#if(((current_volume > vol_percentile_threshold) and (avg_price_five < start_price_five)) or ((current_volume > avg_vol) and (avg_price_five < start_price_five))):
+		if(avg_price_five < start_price_five):
 			print("Sell " + str(start_price) + " " + str(bars[ticker][4].c))
-			sell_all()		
-
-		#print("avg_price_five: " + str(avg_price_five) + " start_five" + str(start_price_five))	
-
-
+			#if(self.api.list_positions().length() = 0):
+			self.sell_all()	
+			order_flag = "sell"
 
 
+		last = self.api.get_barset(ticker, '1Min', 1)
+		
+		#statistics	
+		#record price of stock, avg of 3,5 min,and average volume 3 min and percentile as a pair, number of stocks owned, difference in portfolio value, in respect to time
+
+		#num stocks owned
+		num_stocks = 0
+		if(len(self.api.list_positions()) != 0):
+			for i in self.api.list_positions():
+				num_stocks = num_stocks + int(i.qty)
+
+		#record stats
+		current_time = time.localtime()
+		file_string = self.algo_name + "-" + str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
+		f = open(file_string, 'a')
+		f.write(str(current_time.tm_hour)+" "+str(current_time.tm_min)+" "+str(last[ticker][0].c) + " "+str(avg_price) +" "+ str(avg_price_five) +" "+ str(vol_percentile_threshold) +" "+ str(current_volume) +" "+ str(num_stocks) + " " + self.api.get_account().portfolio_value + "\n")
+		f.flush()
+		f.close()
 
 
 
-
-
-
-
-		bars = self.api.get_barset(ticker, '1Min', 1)
 
