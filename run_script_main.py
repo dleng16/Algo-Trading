@@ -130,7 +130,7 @@ while True:
 		#base.momentum_trade()
 
 	else:
-		if(check_time.tm_hour == 19 and check_time.tm_min == 1): #market just closed
+		if(check_time.tm_hour == 1 and check_time.tm_min == 1): #market just closed
 			to_email = 'avilesov@usc.edu'
 			subject = base.algo_name
 			body = "Variable Info of " + base.algo_name + " algorithm"
@@ -143,3 +143,7 @@ while True:
 		print("Market Closed " + str(clock.timestamp))
 	time.sleep(59)
 
+#hours = check_time.tm_hour - 8
+# if(hours < 0):
+# 	hours = hours +24
+	
