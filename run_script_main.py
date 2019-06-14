@@ -108,17 +108,17 @@ print(time.localtime())
 # 	print(i.qty)
 to_email = 'avilesov@usc.edu' 
 subject = 'Reboot'  
-body = 'starting Process'
+body = 'Starting Process Algo-Trade'
 filename = 'work.txt'
 
-while True:
-	check_time = time.localtime()
-	if(check_time.tm_min % 5 == 0):
-		try:
-			misc.emailing_package(to_email, subject, body, filename)
-		except: 
-			print("Email not sent.")
-	time.sleep(50)
+# while True:
+# 	check_time = time.localtime()
+# 	if(check_time.tm_min % 5 == 0):
+# 		try:
+# 			misc.emailing_package(to_email, subject, body, filename)
+# 		except: 
+# 			print("Email not sent.")
+# 	time.sleep(50)
 
 base = ta.trading_algo(api)
 
