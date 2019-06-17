@@ -11,6 +11,7 @@ class trading_algo:
 		self.email = False
 		self.safety = True
 		self.algo_name = "None"
+		self.algo_variables = []
 
 	def print_info(self):
 		print("Now in tradealgo package")
@@ -59,6 +60,7 @@ class trading_algo:
 
 	def momentum_with_volume(self, ticker, email = False):
 		self.algo_name = 'momentum_with_volume'
+		self.algo_variables = ['time-hour', 'time-minute', 'stock-price', 'avg-price-3-min', 'avg-price-5-min', '90th-percentile-volume', 'current-volume', 'number-of-stocks', 'portfolio-value']
 
 		#get avg volume of last 1000 minutes
 		avg_vol_hist = 0
@@ -100,26 +102,29 @@ class trading_algo:
 		#current volume
 		current_volume = bars[ticker][4].v
 
-		#submit buy
 		order_flag = "hold"
-		if(((current_volume > vol_percentile_threshold) and (avg_price > start_price)) or ((current_volume > avg_vol) and (avg_price > start_price))): 
-			print("Buy " + str(start_price) + " " + str(bars[ticker][4].c))
-			self.api.submit_order(
-	                symbol=ticker,
-	                qty=150,
-	                side='buy',
-	                type='market',
-	                time_in_force='day',
-	            )
-			order_flag = "buy"
-
-	  	#submit sell
+		
+		#submit sell
 		#if(((current_volume > vol_percentile_threshold) and (avg_price_five < start_price_five)) or ((current_volume > avg_vol) and (avg_price_five < start_price_five))):
 		if(avg_price_five < start_price_five):
 			print("Sell " + str(start_price) + " " + str(bars[ticker][4].c))
 			#if(self.api.list_positions().length() = 0):
 			self.sell_all()	
 			order_flag = "sell"
+
+		#submit buy
+		if(order_flag != "sell"):
+			if(((current_volume > vol_percentile_threshold) and (avg_price > start_price)) or ((current_volume > avg_vol) and (avg_price > start_price))): 
+				print("Buy " + str(start_price) + " " + str(bars[ticker][4].c))
+				self.api.submit_order(
+		                symbol=ticker,
+		                qty=150,
+		                side='buy',
+		                type='market',
+		                time_in_force='day',
+		            )
+				order_flag = "buy"
+
 
 
 		last = self.api.get_barset(ticker, '1Min', 1)
@@ -134,9 +139,18 @@ class trading_algo:
 				num_stocks = num_stocks + int(i.qty)
 
 		#record stats
-		current_time = time.localtime()
 		file_string = self.algo_name + "-" + str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
 		f = open(file_string, 'a')
+
+		if f.read(1):
+			pass   
+		else:
+			# file is empty
+			for i in self.algo_variables:
+				f.write(i + " ")
+
+
+		current_time = time.localtime()
 		f.write(str(current_time.tm_hour)+" "+str(current_time.tm_min)+" "+str(last[ticker][0].c) + " "+str(avg_price) +" "+ str(avg_price_five) +" "+ str(vol_percentile_threshold) +" "+ str(current_volume) +" "+ str(num_stocks) + " " + self.api.get_account().portfolio_value + "\n")
 		f.flush()
 		f.close()
