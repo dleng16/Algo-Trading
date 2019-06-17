@@ -103,7 +103,7 @@ class trading_algo:
 		current_volume = bars[ticker][4].v
 
 		order_flag = "hold"
-		
+
 		#submit sell
 		#if(((current_volume > vol_percentile_threshold) and (avg_price_five < start_price_five)) or ((current_volume > avg_vol) and (avg_price_five < start_price_five))):
 		if(avg_price_five < start_price_five):
@@ -140,12 +140,12 @@ class trading_algo:
 
 		#record stats
 		file_string = self.algo_name + "-" + str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
-		f = open(file_string, 'a')
+		f = open(file_string, 'r')
 
 		if f.read(1):
-			pass   
+			f = open(file_string, 'a')   
 		else:
-			# file is empty
+			f = open(file_string, 'a')
 			for i in self.algo_variables:
 				f.write(i + " ")
 
