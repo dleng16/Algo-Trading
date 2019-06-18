@@ -2,6 +2,8 @@ import alpaca_trade_api as tradeapi
 import time
 import numpy as np
 import pandas as pd
+import os.path
+
 
 class trading_algo:
 
@@ -140,6 +142,9 @@ class trading_algo:
 
 		#record stats
 		file_string = self.algo_name + "-" + str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
+		if os.path.isfile(file_string) != True:
+			f = open(file_string, 'w')
+
 		f = open(file_string, 'r')
 
 		if f.read(1):

@@ -18,8 +18,8 @@ api = tradeapi.REST(
 # print(api.get_clock())
 # print()
 print(time.clock())
-# hi = pd.Timestamp(year=2017, month=1, day=1, hour=12).time()
-# print(hi)
+hi = pd.Timestamp(year=2017, month=1, day=1, hour=12, minute = 3).isoformat()
+print(hi)
 print(time.localtime())
 
 # avg = 0
@@ -72,9 +72,9 @@ print(time.localtime())
 # print(now.strftime('%Y-%m-%d'))
 
 #a = ['AAPL', 'TSLA']
-# bars = api.get_barset("AAPL", '1Min', 5)
+bars = api.get_barset("AAPL", '1Min', 5)
 
-# #print(bars)
+print(bars)
 # # print(" ")
 # # print(" ")
 # # print(bars.df)
@@ -120,36 +120,37 @@ filename = 'work.txt'
 # 			print("Email not sent.")
 # 	time.sleep(50)
 
-base = ta.trading_algo(api)
-
-while True:
-	clock = api.get_clock()
-	check_time = time.localtime()
-
-	if clock.is_open:
-		print("")
-		base.momentum_with_volume('AAPL', True)
-		#base.momentum_trade()
-
-	else:
-		hours = check_time.tm_hour - 8
-		if(hours < 0):
-			hours = hours +24
-		if(hours == 23 and check_time.tm_min == 28): #market just closed
-			to_email = 'avilesov@usc.edu'
-			subject = base.algo_name
-			body = "Variable Info of " + base.algo_name + " algorithm"
-			filename = str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
-			filename = base.algo_name + "-" + str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
-			misc.emailing_package(to_email, subject, body, filename)
 
 
 
-		print("Market Closed " + str(clock.timestamp))
-	time.sleep(59)
 
-#hours = check_time.tm_hour - 8
-# if(hours < 0):
-# 	hours = hours +24
-#l
+
+# base = ta.trading_algo(api)
+
+# while True:
+# 	clock = api.get_clock()
+# 	check_time = time.localtime()
+
+# 	if clock.is_open:
+# 		print("")
+# 		base.momentum_with_volume('AAPL', True)
+# 		#base.momentum_trade()
+
+# 	else:
+# 		hours = check_time.tm_hour - 8
+# 		if(hours < 0):
+# 			hours = hours +24
+# 		if(hours == 23 and check_time.tm_min == 28): #market just closed
+# 			to_email = 'avilesov@usc.edu'
+# 			subject = base.algo_name
+# 			body = "Variable Info of " + base.algo_name + " algorithm"
+# 			filename = str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
+# 			filename = base.algo_name + "-" + str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
+# 			misc.emailing_package(to_email, subject, body, filename)
+
+
+
+# 		print("Market Closed " + str(clock.timestamp))
+# 	time.sleep(59)
+
 	
