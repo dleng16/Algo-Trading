@@ -1,4 +1,41 @@
-# Momentum-Trading-Example
+Trading Algoirthm on the NYSE
+
+Classes avaliable to:
+	1. Trade real time
+	2. Evaluate performance
+	3. Simulate any day of the stock market with any algorithm
+
+
+
+Algorithms:
+
+Mode Based Trading - Minute Time Frame
+	
+	5_min_avg = calculate 5 min avg
+	current_price = get current stock price
+	alpha = coefficient for volatility
+
+	slope_coef = find the sleop coefficient with a regression fitted through the last 5 minutes of data
+
+	if(current_price > 5_min_avg):
+		sell order
+	
+	else:
+		if(slope_coef > 0):
+			if(absolute_value(current_price - 5_min_avg) < alpha):
+				buy order
+
+			else:
+				sell order or hold order (depending on risk)
+
+
+
+
+
+
+
+
+
 
 An example algorithm for a momentum-based day trading strategy. This script uses the API provided by [Alpaca](https://alpaca.markets/). A brokerage account with Alpaca, available to US customers, is required to access the [Polygon](https://polygon.io/) data stream used by this algorithm.
 

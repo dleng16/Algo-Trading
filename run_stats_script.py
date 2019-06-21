@@ -20,10 +20,10 @@ api = tradeapi.REST(
 
 ticker = 'AAPL'
 
-stats = algos_stats.algo_simulator(api, 30000, "tesla-modes15")
+stats = algos_stats.algo_simulator(api, 30000, "2")
 
 # noo = pd.Timestamp('2019-06-17 16:00',tz='America/New_York').isoformat()
-start = pd.Timestamp(year=2019, month=6, day=12, hour=9, minute = 30)
+start = pd.Timestamp(year=2019, month=5, day=10, hour=9, minute = 30)
 # startbeta = pd.Timestamp('2019-06-17 15:58',tz='America/New_York').isoformat()
 # startbetapoint = pd.Timestamp(year=2019, month=6, day=13, hour=11, minute = 33).isoformat()
 
@@ -39,4 +39,6 @@ start = pd.Timestamp(year=2019, month=6, day=12, hour=9, minute = 30)
 
 
 #stats.momentum_with_volume('TSLA', start)
-stats.mode_based_trading('TSLA',start)
+stats.recursive_regression_trading('AAPL',start)
+
+#stats.delayed_volume_price_trading('TSLA',start)
