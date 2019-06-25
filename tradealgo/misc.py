@@ -4,7 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase 
 from email import encoders 
 
-def emailing_package(to_email, subject, body, filename):
+def emailing_package(to_email, subject, body, filename = None):
 
 	fh = open("../email_private.txt", "r")
 	temp = fh.read().split('\n')

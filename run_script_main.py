@@ -22,90 +22,16 @@ hi = pd.Timestamp(year=2017, month=1, day=1, hour=12, minute = 3).isoformat()
 print(hi)
 print(time.localtime())
 
-# avg = 0
-# volume_list = []
-# bars = api.get_barset('AAPL', '5Min', limit=1000)
-# for i in bars["AAPL"]:
-# 	volume_list.append(i.v)
-# 	avg = avg + i.v
-# avg = avg /1000/5
-# print(avg)
-# print(np.percentile(volume_list, 95)/5)
-# print(api.get_barset('AAPL', '1Min', limit=5))
 
-
-# api.submit_order(
-#                 symbol='AAPL',
-#                 qty=2156,
-#                 side='buy',
-#                 type='market',
-#                 time_in_force='day',
-#             )
-
-# api.submit_order(
-#                 symbol='TSLA',
-#                 qty=903,
-#                 side='buy',
-#                 type='market',
-#                 time_in_force='day',
-#             )
-# api.submit_order(
-#                 symbol='FB',
-#                 qty=1056,
-#                 side='buy',
-#                 type='market',
-#                 time_in_force='day',
-#             )
-# time.sleep(200)
-
-# clock = api.get_clock()
-
-#print(api.get_asset("AAPL"))
-
-# now = clock.timestamp
-
-# print(now)
-# print(clock.is_open)
-# #print(api.list_assets())
-#pos = api.list_positions()
-#print(pos[0])
-# print(now.strftime('%Y-%m-%d'))
 
 #a = ['AAPL', 'TSLA']
 bars = api.get_barset("AAPL", '1Min', 5)
 
 print(bars)
-# # print(" ")
-# # print(" ")
-# # print(bars.df)
-# #print(bars["AAPL"])
-# print(bars)
-# #print(api)
-# print(api.list_orders())
-# print(api.get_account().portfolio_value)
-# print(len(api.list_positions()))
-# print(api.get_barset("AAPL", '1Min', 1)["AAPL"][0].c)
+lol = {key: value[:] for key, value in bars.items()}
 
-# f = open("work.txt", "a")
-# f.write("record")
-# f.close()
+print(lol)
 
-# last = api.get_barset("AAPL", '1Min', 1)
-# current_time = time.localtime()
-# file_string = str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
-# f = open(file_string, "a")
-# f.write(str(current_time.tm_hour)+" "+str(current_time.tm_min)+" "+str(last["AAPL"][0].c) + api.get_account().portfolio_value + "\n")
-# f.flush()
-# f.close
-# r = open(file_string, "r")
-# print(r.read())
-
-# file_string = str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
-# f = open(file_string, 'a')
-# f.close()
-
-# for i in api.list_positions():
-# 	print(i.qty)
 to_email = 'avilesov@usc.edu' 
 subject = 'Reboot'  
 body = 'Starting Process Algo-Trade'
@@ -154,3 +80,84 @@ filename = 'work.txt'
 # 	time.sleep(59)
 
 	
+
+	# avg = 0
+# volume_list = []
+# bars = api.get_barset('AAPL', '5Min', limit=1000)
+# for i in bars["AAPL"]:
+# 	volume_list.append(i.v)
+# 	avg = avg + i.v
+# avg = avg /1000/5
+# print(avg)
+# print(np.percentile(volume_list, 95)/5)
+# print(api.get_barset('AAPL', '1Min', limit=5))
+
+
+# api.submit_order(
+#                 symbol='AAPL',
+#                 qty=2156,
+#                 side='buy',
+#                 type='market',
+#                 time_in_force='day',
+#             )
+
+# api.submit_order(
+#                 symbol='TSLA',
+#                 qty=903,
+#                 side='buy',
+#                 type='market',
+#                 time_in_force='day',
+#             )
+# api.submit_order(
+#                 symbol='FB',
+#                 qty=1056,
+#                 side='buy',
+#                 type='market',
+#                 time_in_force='day',
+#             )
+# time.sleep(200)
+
+# clock = api.get_clock()
+
+#print(api.get_asset("AAPL"))
+
+# now = clock.timestamp
+
+# print(now)
+# print(clock.is_open)
+# #print(api.list_assets())
+#pos = api.list_positions()
+#print(pos[0])
+# print(now.strftime('%Y-%m-%d'))
+
+# # print(" ")
+# # print(" ")
+# # print(bars.df)
+# #print(bars["AAPL"])
+# print(bars)
+# #print(api)
+# print(api.list_orders())
+# print(api.get_account().portfolio_value)
+# print(len(api.list_positions()))
+# print(api.get_barset("AAPL", '1Min', 1)["AAPL"][0].c)
+
+# f = open("work.txt", "a")
+# f.write("record")
+# f.close()
+
+# last = api.get_barset("AAPL", '1Min', 1)
+# current_time = time.localtime()
+# file_string = str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
+# f = open(file_string, "a")
+# f.write(str(current_time.tm_hour)+" "+str(current_time.tm_min)+" "+str(last["AAPL"][0].c) + api.get_account().portfolio_value + "\n")
+# f.flush()
+# f.close
+# r = open(file_string, "r")
+# print(r.read())
+
+# file_string = str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
+# f = open(file_string, 'a')
+# f.close()
+
+# for i in api.list_positions():
+# 	print(i.qty)
