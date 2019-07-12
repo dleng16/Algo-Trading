@@ -2,6 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import tradealgo.algos_stats as algos_stats
 import alpaca_trade_api as tradeapi
+import tradealgo.weight_generation as wg
 import time
 import numpy as np
 import pandas as pd
@@ -10,6 +11,13 @@ import math
 
 
 #second based simulator
+
+def record_stats(file_name, data): #has to be in csv data format already
+		if os.path.isfile(file_name) != True:
+			f = open(file_name, 'w')
+			f.write(data)
+			f.flush()
+			f.close
 
 class trading_simulator:
 
@@ -30,8 +38,6 @@ class trading_simulator:
 			if safety:
 				pass
 
-
-
 		while(date.year != end_date.year or date.month != end_date.month or date.day != end_date.day or date.hour != 16+4): #unix time now
 			if(date.isoweekday() < 6):
 				# try:
@@ -43,6 +49,13 @@ class trading_simulator:
 	def time_simulator(self, time, time_delta):
 		time = time + pd.Timedelta('1 min')
 		return time
+
+	def plot_trading(self, history):
+		plt.figure(0)
+		N = len(history)
+		x = np.linspace(0.0, 1.0, N)
+		plt.plot(x, history)
+		print(len(history))
 
 	def buy(self, ticker, current_price, num_stocks = .25):
 		num_stocks = math.floor((self.portfolio_value*num_stocks)/current_price)
@@ -71,6 +84,38 @@ class trading_simulator:
 			self.stocks[ticker] = 0
 			self.order_flag = "sell"
 		self.portfolio_value = self.buyingpower + self.stocks[ticker]*current_price
+
+	def box_trading(self, ticker, data, low, high, lag = 0):
+		self.stocks[ticker] = 0
+		count = 0
+		history = []
+		critical_price = 0
+		risk = False
+		for i in range(len(data)):
+			last_n_seconds = []
+			time_pd = pd.to_datetime(data[i]['unix_time'], unit='ms')
+			if (time_pd.hour >= 9 or time_pd.minute >= 45) and (time_pd.hour != 19 or time_pd.minute <=59):
+				if data[i-180]['price'] < data[i]['price'] and data[i-30]['price'] < data[i]['price']:
+					self.sell_all(ticker, data[i+lag]['price'])
+					if not risk:
+						critical_price = data[i]['price']
+					risk = True
+					print("buy")
+				if ((1+high)*critical_price) < (data[i]['price']):
+					critical_price = data[i]['price']
+					print("hold")
+				if (1-low)*critical_price >= data[i]['price']:
+					risk = False
+					self.buy(ticker, data[i+lag]['price'])
+					print("sell")
+
+				print(str(self.portfolio_value) +" c.p. high " + str((1+high)*critical_price) + " c.p. low " + str((1-low)*critical_price))
+				print(str(data[i]['price']) + " 60 seconds ago : " + str(data[i-60]['price']) + " 10 seconds ago : "  + str(data[i-10]['price']))
+				print("----------------------------------------")
+
+				self.portfolio_value = self.buyingpower + self.stocks[ticker]*data[i+lag]['price']
+				history.append(self.portfolio_value)
+		self.plot_trading(history)
 
 	def momentum_function(self, ticker, data, n_seconds = 10, lag = 0):
 		self.stocks[ticker] = 0
@@ -112,8 +157,8 @@ class trading_simulator:
 			time_pd = pd.to_datetime(data[i]['unix_time'], unit='ms')
 			if (time_pd.hour >= 9 or time_pd.minute >= 45) and (time_pd.hour != 19 or time_pd.minute <=45):
 				for k in range(2, n_seconds+1,1):
+					last_n_seconds = []
 					for j in range(1, k+1, 1):
-						last_n_seconds = []
 						last_n_seconds.append(data[i-j]['price'])
 						last_n_seconds.reverse()
 					x = np.linspace(1, k, len(last_n_seconds))
@@ -167,6 +212,80 @@ class trading_simulator:
 		x = np.linspace(0.0, 1.0, N)
 		plt.plot(x, history)
 		print(len(history))
+
+	def recursive_momentum_function_record(self, ticker, name, data, n_seconds = 10):
+		self.stocks[ticker] = 0
+		count = 0
+		history = []
+		filename = "ML_data_" + name + "_" + self.recursive_momentum_function_record.__name__ + "_" + ticker + ".txt"
+		f = open(filename, "w")
+		f = open(filename, "a")
+		for i in range(len(data)-1):
+			decision = 0
+			last_n_seconds = []
+			recording_coefficients = []
+			time_pd = pd.to_datetime(data[i]['unix_time'], unit='ms')
+			if (time_pd.hour >= 9 or time_pd.minute >= 45) and (time_pd.hour != 19 or time_pd.minute <=45):
+				for k in range(2, n_seconds+1,1):
+					last_n_seconds = []
+					for j in range(1, k+1, 1):
+						last_n_seconds.append(data[i-j]['price'])
+					last_n_seconds.reverse()
+					#print(last_n_seconds)
+					x = np.linspace(1, k, len(last_n_seconds))
+					#print(x)
+					regression = np.polyfit(x, last_n_seconds, 1)
+					recording_coefficients.append(regression[0])
+					#print(str(regression[0]) + " " + str(regression[1]))
+				current_difference = data[i]['price'] - data[i-1]['price']
+			label = 0
+			if data[i+1]['price'] > data[i]['price']:
+				label = 1
+			if len(recording_coefficients) > 1:
+				data_string = str(current_difference) + " " + " ".join(str(e) for e in recording_coefficients) + " " + str(label) + "\n"
+				print(data_string)
+				f.write(data_string)
+
+
+
+	def recursive_momentum_function_trained(self, ticker, data, training_data, n_seconds = 10, epochs = 100, lag = 0):
+		self.stocks[ticker] = 0
+		count = 0
+		history = []
+		model = wg.learn_weights(training_data, epochs = epochs)
+		for i in range(len(data)):
+			decision = 0
+			last_n_seconds = []
+			recording_coefficients = []
+			time_pd = pd.to_datetime(data[i]['unix_time'], unit='ms')
+			if (time_pd.hour >= 9 or time_pd.minute >= 45) and (time_pd.hour != 19 or time_pd.minute <=45):
+				for k in range(2, n_seconds+1,1):
+					last_n_seconds = []
+					for j in range(1, k+1, 1):
+						last_n_seconds.append(data[i-j]['price'])
+					last_n_seconds.reverse()
+					#print(last_n_seconds)
+					x = np.linspace(1, k, len(last_n_seconds))
+					#print(x)
+					regression = np.polyfit(x, last_n_seconds, 1)
+					recording_coefficients.append(regression[0])
+					#print(str(regression[0]) + " " + str(regression[1]))
+				current_difference = data[i]['price'] - data[i-1]['price']
+				recording_coefficients.insert(0, current_difference)
+				#print(model.predict(np.array([recording_coefficients]))[0][0])
+				if model.predict(np.array([recording_coefficients]))[0][0] < 0.45:
+					self.buy(ticker, data[i+lag]['price'])
+					count += 1
+				else:
+					self.sell_all(ticker, data[i+lag]['price'])
+				print(str(self.portfolio_value) + " " + str(count) + " " +str(model.predict(np.array([recording_coefficients]))[0][0]))
+				history.append(self.portfolio_value)
+		plt.figure(0)
+		N = len(history)
+		x = np.linspace(0.0, 1.0, N)
+		plt.plot(x, history)
+		#record as (diff curr-past),(coefficients), (volume), (label)
+
 
 	def momentum_function_quick_sell(self, ticker, data, n_seconds = 10, quick_sell_seconds = 5, lag = 0):
 		self.stocks[ticker] = 0

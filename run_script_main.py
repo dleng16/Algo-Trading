@@ -24,14 +24,6 @@ print(time.localtime())
 
 
 
-#a = ['AAPL', 'TSLA']
-bars = api.get_barset("AAPL", '1Min', 5)
-
-print(bars)
-lol = {key: value[:] for key, value in bars.items()}
-
-print(lol)
-
 to_email = 'avilesov@usc.edu' 
 subject = 'Reboot'  
 body = 'Starting Process Algo-Trade'
@@ -51,33 +43,33 @@ filename = 'work.txt'
 
 
 
-# base = ta.trading_algo(api)
+base = ta.trading_algo(api)
 
-# while True:
-# 	clock = api.get_clock()
-# 	check_time = time.localtime()
+crit_price = 200 #neccessary for initating box_trading
 
-# 	if clock.is_open:
-# 		print("")
-# 		base.momentum_with_volume('AAPL', True)
-# 		#base.momentum_trade()
+while True:
+	clock = api.get_clock()
+	check_time = time.localtime()
 
-# 	else:
-# 		hours = check_time.tm_hour - 8
-# 		if(hours < 0):
-# 			hours = hours +24
-# 		if(hours == 23 and check_time.tm_min == 28): #market just closed
-# 			to_email = 'avilesov@usc.edu'
-# 			subject = base.algo_name
-# 			body = "Variable Info of " + base.algo_name + " algorithm"
-# 			filename = str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
-# 			filename = base.algo_name + "-" + str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
-# 			misc.emailing_package(to_email, subject, body, filename)
+	if clock.is_open:
+		print("")
+		crit_price = base.box_trading('AAPL', 0.001, 0.001, crit_price)
 
+	else:
+		time.sleep(120)
+		hours = check_time.tm_hour - 8
+		print("Market Closed " + str(clock.timestamp))
+		if(hours < 0):
+			hours = hours +24
+		if(hours == 23 and check_time.tm_min == 28): #market just closed
+			to_email = 'avilesov@usc.edu'
+			subject = base.algo_name
+			body = "Variable Info of " + base.algo_name + " algorithm"
+			filename = str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
+			filename = base.algo_name + "-" + str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
+			misc.emailing_package(to_email, subject, body, filename)
 
-
-# 		print("Market Closed " + str(clock.timestamp))
-# 	time.sleep(59)
+	time.sleep(.5)
 
 	
 
@@ -115,49 +107,3 @@ filename = 'work.txt'
 #                 type='market',
 #                 time_in_force='day',
 #             )
-# time.sleep(200)
-
-# clock = api.get_clock()
-
-#print(api.get_asset("AAPL"))
-
-# now = clock.timestamp
-
-# print(now)
-# print(clock.is_open)
-# #print(api.list_assets())
-#pos = api.list_positions()
-#print(pos[0])
-# print(now.strftime('%Y-%m-%d'))
-
-# # print(" ")
-# # print(" ")
-# # print(bars.df)
-# #print(bars["AAPL"])
-# print(bars)
-# #print(api)
-# print(api.list_orders())
-# print(api.get_account().portfolio_value)
-# print(len(api.list_positions()))
-# print(api.get_barset("AAPL", '1Min', 1)["AAPL"][0].c)
-
-# f = open("work.txt", "a")
-# f.write("record")
-# f.close()
-
-# last = api.get_barset("AAPL", '1Min', 1)
-# current_time = time.localtime()
-# file_string = str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
-# f = open(file_string, "a")
-# f.write(str(current_time.tm_hour)+" "+str(current_time.tm_min)+" "+str(last["AAPL"][0].c) + api.get_account().portfolio_value + "\n")
-# f.flush()
-# f.close
-# r = open(file_string, "r")
-# print(r.read())
-
-# file_string = str(time.localtime().tm_year) + "-" + str(time.localtime().tm_mon) + "-" + str(time.localtime().tm_mday) + ".txt"
-# f = open(file_string, 'a')
-# f.close()
-
-# for i in api.list_positions():
-# 	print(i.qty)

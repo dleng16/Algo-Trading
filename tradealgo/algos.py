@@ -28,6 +28,57 @@ class trading_algo:
 	                time_in_force='day',
 	            )
 
+	def box_trading(self, ticker, low, high, critical_price):
+		current = time.localtime()
+		current_time = int(time.time())*(10**3)
+		safetytime_1 = current_time - 20000
+		safetytime_2 = safetytime_1
+		safetytime_1 -= 180*(10**3) # 3 min ago
+		safetytime_2 -= 30*(10**3) # 30 sec ago
+		#data0 = self.api.polygon.historic_trades(ticker, str(current.tm_year) + '-' + str(current.tm_mon) + '-' + str(current.tm_mday), limit = 100, offset = current_time)
+		#data0 = data0[-10:]
+		#current_price = sum([i.price for i in data0])/len(data0)
+		current_price = self.api.polygon.last_trade(ticker).price
+		data1 = self.api.polygon.historic_trades(ticker, str(current.tm_year) + '-' + str(current.tm_mon) + '-' + str(current.tm_mday), offset = safetytime_1)
+		safety_price_1 = sum([i.price for i in data1])/len(data1)
+		data2 = self.api.polygon.historic_trades(ticker, str(current.tm_year) + '-' + str(current.tm_mon) + '-' + str(current.tm_mday), limit = 10, offset = safetytime_2)
+		safety_price_2 = sum([i.price for i in data2])/len(data2)
+
+		risk = False
+
+		if len(self.api.list_positions()):
+			risk = True
+
+		if safety_price_1 < current_price and safety_price_2 < current_price:
+			self.sell_all()
+			if not risk:
+				critical_price = current_price
+			risk = True
+			print("sell")
+		if (1+high)*critical_price < current_price:
+			critical_price = current_price
+			print("hold")
+		if (1-low)*critical_price >= current_price:
+			risk = False
+			try:
+				self.api.submit_order(
+		                symbol='AAPL',
+		                qty= 40,
+		                side='buy',
+		                type='market',
+		                time_in_force='day',
+		            )
+			except:
+				print("no money")
+			print("buy")
+
+		print(str(current_price) + " " + str(critical_price) + " " + str((1+high)*critical_price) + " " + str((1-low)*critical_price))
+
+		return critical_price
+
+
+
+
 	def momentum_trade(self):
 
 		#take the convolution of the last three minutes with a weighted array
