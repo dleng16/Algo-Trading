@@ -2,6 +2,7 @@ import alpaca_trade_api as tradeapi
 import time
 import numpy as np
 import pandas as pd
+from datetime import datetime
 
 import tradealgo.algos as ta
 from tradealgo import misc
@@ -50,6 +51,8 @@ crit_price = 200 #neccessary for initating box_trading
 while True:
 	clock = api.get_clock()
 	check_time = time.localtime()
+	unix_time = time.time()
+	utc_time = datetime.fromtimestamp(unix_time)
 
 	if clock.is_open:
 		print("")

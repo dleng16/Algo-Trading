@@ -38,11 +38,16 @@ class trading_algo:
 		#data0 = self.api.polygon.historic_trades(ticker, str(current.tm_year) + '-' + str(current.tm_mon) + '-' + str(current.tm_mday), limit = 100, offset = current_time)
 		#data0 = data0[-10:]
 		#current_price = sum([i.price for i in data0])/len(data0)
-		current_price = self.api.polygon.last_trade(ticker).price
-		data1 = self.api.polygon.historic_trades(ticker, str(current.tm_year) + '-' + str(current.tm_mon) + '-' + str(current.tm_mday), offset = safetytime_1)
-		safety_price_1 = sum([i.price for i in data1])/len(data1)
-		data2 = self.api.polygon.historic_trades(ticker, str(current.tm_year) + '-' + str(current.tm_mon) + '-' + str(current.tm_mday), limit = 10, offset = safetytime_2)
-		safety_price_2 = sum([i.price for i in data2])/len(data2)
+		try:
+			current_price = self.api.polygon.last_trade(ticker).price
+			data1 = self.api.polygon.historic_trades(ticker, str(current.tm_year) + '-' + str(current.tm_mon) + '-' + str(current.tm_mday), offset = safetytime_1)
+			safety_price_1 = sum([i.price for i in data1])/len(data1)
+			data2 = self.api.polygon.historic_trades(ticker, str(current.tm_year) + '-' + str(current.tm_mon) + '-' + str(current.tm_mday), limit = 10, offset = safetytime_2)
+			safety_price_2 = sum([i.price for i in data2])/len(data2)
+		except:
+			current_price = 200
+			safety_price_1 = 200
+			safetytime_2 = 200
 
 		risk = False
 
@@ -50,7 +55,10 @@ class trading_algo:
 			risk = True
 
 		if safety_price_1 < current_price and safety_price_2 < current_price:
-			self.sell_all()
+			try:
+				self.sell_all()
+			except:
+				print("sell error")
 			if not risk:
 				critical_price = current_price
 			risk = True

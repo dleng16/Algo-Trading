@@ -91,31 +91,35 @@ class trading_simulator:
 		history = []
 		critical_price = 0
 		risk = False
+		print(self.portfolio_value)
+		print(self.buyingpower)
 		for i in range(len(data)):
 			last_n_seconds = []
 			time_pd = pd.to_datetime(data[i]['unix_time'], unit='ms')
-			if (time_pd.hour >= 9 or time_pd.minute >= 45) and (time_pd.hour != 19 or time_pd.minute <=59):
+			if (time_pd.hour >= 9 or time_pd.minute >= 45) and (time_pd.hour != 19 or time_pd.minute <=45):
 				if data[i-180]['price'] < data[i]['price'] and data[i-30]['price'] < data[i]['price']:
 					self.sell_all(ticker, data[i+lag]['price'])
 					if not risk:
 						critical_price = data[i]['price']
 					risk = True
-					print("buy")
+					#print("buy")
 				if ((1+high)*critical_price) < (data[i]['price']):
 					critical_price = data[i]['price']
-					print("hold")
+					#print("hold")
 				if (1-low)*critical_price >= data[i]['price']:
 					risk = False
 					self.buy(ticker, data[i+lag]['price'])
-					print("sell")
+					#print("sell")
 
-				print(str(self.portfolio_value) +" c.p. high " + str((1+high)*critical_price) + " c.p. low " + str((1-low)*critical_price))
-				print(str(data[i]['price']) + " 60 seconds ago : " + str(data[i-60]['price']) + " 10 seconds ago : "  + str(data[i-10]['price']))
-				print("----------------------------------------")
-
+				#print(str(self.portfolio_value) +" c.p. high " + str((1+high)*critical_price) + " c.p. low " + str((1-low)*critical_price))
+				#print(str(data[i]['price']) + " 60 seconds ago : " + str(data[i-60]['price']) + " 10 seconds ago : "  + str(data[i-10]['price']))
+				#print("----------------------------------------")
 				self.portfolio_value = self.buyingpower + self.stocks[ticker]*data[i+lag]['price']
 				history.append(self.portfolio_value)
-		self.plot_trading(history)
+			else:
+				self.sell_all(ticker, data[i]['price'])
+		print(self.portfolio_value)
+		#self.plot_trading(history)
 
 	def momentum_function(self, ticker, data, n_seconds = 10, lag = 0):
 		self.stocks[ticker] = 0
