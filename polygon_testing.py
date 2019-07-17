@@ -144,8 +144,8 @@ def fourier_transform(data, sample_spacing = 1): #data in list form please
 	plt.show()
 
 
-start = pd.Timestamp(year=2019, month=7, day=12, hour=13, minute = 40)
-end = pd.Timestamp(year=2019, month=7, day=12, hour=20, minute = 0)
+start = pd.Timestamp(year=2019, month=7, day=15, hour=13, minute = 40)
+end = pd.Timestamp(year=2019, month=7, day=15, hour=20, minute = 0)
 
 
 # datalol = api.polygon.historic_trades('TSLA', str(start.year) + '-' + str(start.month) + '-' + str(start.day), limit = 10, offset = 0)
@@ -160,7 +160,7 @@ end = pd.Timestamp(year=2019, month=7, day=12, hour=20, minute = 0)
 
 #print(start.isoformat())
 
-data_low = conversion_lower_resolutionV2(start, end, 'MSFT', textfile_copy = True)
+data_low = conversion_lower_resolutionV2(start, end, 'AAPL', textfile_copy = True)
 
 low_df = pd.DataFrame(data_low)
 #print(lol)
@@ -169,10 +169,11 @@ low_df = pd.DataFrame(data_low)
 #fourier_transform(lol['price'].tolist())
 
 sim = ts.trading_simulator()
-for i in range(1, 100, 1):
-	sim.box_trading('AAPL', data_low, 0.001, i/10000, lag = 0)
-	sim.portfolio_value = 30000
-	sim.buying_power = 30000
+sim.box_trading('AAPL', data_low, 0.001, 0.001, lag = 0)
+# for i in range(1, 100, 1):
+# 	sim.box_trading('AAPL', data_low, 0.001, i/10000, lag = 0)
+# 	sim.portfolio_value = 30000
+# 	sim.buying_power = 30000
 # sim.recursive_momentum_function_record('AAPL', 'test_balanced', data_low, n_seconds = 10)
 # sim.recursive_momentum_function_trained('AAPL', data_low, 'ML_data_test_balanced_recursive_momentum_function_record_AAPL.txt', n_seconds = 10, epochs = 10)
 

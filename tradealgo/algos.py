@@ -56,7 +56,13 @@ class trading_algo:
 
 		if safety_price_1 < current_price and safety_price_2 < current_price:
 			try:
-				self.sell_all()
+				self.api.submit_order(
+		                symbol='AAPL',
+		                qty= 40,
+		                side='buy',
+		                type='market',
+		                time_in_force='day',
+		            )
 			except:
 				print("sell error")
 			if not risk:
@@ -69,13 +75,7 @@ class trading_algo:
 		if (1-low)*critical_price >= current_price:
 			risk = False
 			try:
-				self.api.submit_order(
-		                symbol='AAPL',
-		                qty= 40,
-		                side='buy',
-		                type='market',
-		                time_in_force='day',
-		            )
+				self.sell_all()
 			except:
 				print("no money")
 			print("buy")
