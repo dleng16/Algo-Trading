@@ -55,9 +55,9 @@ while True:
 	unix_time = time.time()
 	utc_time = datetime.fromtimestamp(unix_time)
 
-	if clock.is_open:
+	if clock.is_open and (utc_time.hour > 6 or utc_time.minute > 45):
 		print("")
-		crit_price = base.box_trading('AAPL', 0.001, 0.001, crit_price)
+		crit_price = base.box_trading('TSLA', 0.0005, 0.0005, crit_price)
 
 	else:
 		time.sleep(120)

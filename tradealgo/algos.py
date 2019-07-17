@@ -66,12 +66,13 @@ class trading_algo:
 			                type='market',
 			                time_in_force='day',
 			            )
+					print("buy")
 			except:
-				print("buy error")
+				print("insufficient funds")
 			if not risk:
 				critical_price = current_price
 			risk = True
-			print("buy")
+
 		if (1+high)*critical_price < current_price:
 			critical_price = current_price
 			print("hold")
@@ -79,9 +80,9 @@ class trading_algo:
 			if not risk:
 				try:
 					self.sell_all()
+					print("sell")
 				except:
-					print("no money")
-				print("sell")
+					print("nothing to sell")
 			risk = False
 
 		print(str(current_price) + " " + str(critical_price) + " " + str((1+high)*critical_price) + " " + str((1-low)*critical_price))
