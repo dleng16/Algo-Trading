@@ -49,6 +49,8 @@ class trading_algo:
 			safety_price_1 = 200
 			safetytime_2 = 200
 
+		buying_power = self.api.get_account().buying_power
+
 		risk = False
 
 		if len(self.api.list_positions()):
@@ -56,29 +58,31 @@ class trading_algo:
 
 		if safety_price_1 < current_price and safety_price_2 < current_price:
 			try:
-				self.api.submit_order(
-		                symbol='AAPL',
-		                qty= 40,
-		                side='buy',
-		                type='market',
-		                time_in_force='day',
-		            )
+				if buying_power > 40*current_price:
+					self.api.submit_order(
+			                symbol='AAPL',
+			                qty= 40,
+			                side='buy',
+			                type='market',
+			                time_in_force='day',
+			            )
 			except:
-				print("sell error")
+				print("buy error")
 			if not risk:
 				critical_price = current_price
 			risk = True
-			print("sell")
+			print("buy")
 		if (1+high)*critical_price < current_price:
 			critical_price = current_price
 			print("hold")
 		if (1-low)*critical_price >= current_price:
+			if not risk:
+				try:
+					self.sell_all()
+				except:
+					print("no money")
+				print("sell")
 			risk = False
-			try:
-				self.sell_all()
-			except:
-				print("no money")
-			print("buy")
 
 		print(str(current_price) + " " + str(critical_price) + " " + str((1+high)*critical_price) + " " + str((1-low)*critical_price))
 

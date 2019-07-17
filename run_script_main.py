@@ -30,6 +30,7 @@ subject = 'Reboot'
 body = 'Starting Process Algo-Trade'
 filename = 'work.txt'
 
+print(api.get_account())
 # while True:
 # 	check_time = time.localtime()
 # 	if(check_time.tm_min % 5 == 0):
