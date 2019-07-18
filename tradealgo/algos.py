@@ -57,6 +57,8 @@ class trading_algo:
 			risk = True
 
 		if safety_price_1 < current_price and safety_price_2 < current_price:
+			print(buying_power)
+			print(40*current_price)
 			try:
 				if buying_power > 40*current_price:
 					self.api.submit_order(
