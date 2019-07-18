@@ -59,9 +59,9 @@ class trading_algo:
 		if safety_price_1 < current_price and safety_price_2 < current_price:
 			print(buying_power)
 			print(40*current_price)
-			if buying_power > 40*current_price:
+			if str(buying_power) > 40*current_price:
 				self.api.submit_order(
-		                symbol='AAPL',
+		                symbol=ticker,
 		                qty= 40,
 		                side='buy',
 		                type='market',
