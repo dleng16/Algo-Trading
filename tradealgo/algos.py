@@ -59,17 +59,16 @@ class trading_algo:
 		if safety_price_1 < current_price and safety_price_2 < current_price:
 			print(buying_power)
 			print(40*current_price)
-			try:
-				if buying_power > 40*current_price:
-					self.api.submit_order(
-			                symbol='AAPL',
-			                qty= 40,
-			                side='buy',
-			                type='market',
-			                time_in_force='day',
-			            )
-					print("buy")
-			except:
+			if buying_power > 40*current_price:
+				self.api.submit_order(
+		                symbol='AAPL',
+		                qty= 40,
+		                side='buy',
+		                type='market',
+		                time_in_force='day',
+		            )
+				print("buy")
+			else:
 				print("insufficient funds")
 			if not risk:
 				critical_price = current_price
